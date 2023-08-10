@@ -16,6 +16,8 @@ const port = 4000;
 app.use('/', require('./expected_visitor'))
 app.use('/frequent/visitor/',require('./frequent_visitor'))
 app.use('/member/',require('./family_member'))
+app.use('/login',require('./login'))
+app.use('/users/',require('./users'))
 
 
 // Start the server
