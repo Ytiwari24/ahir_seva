@@ -1,12 +1,13 @@
 const express = require('express')
 const jwt = require('jsonwebtoken');
 const app = express.Router()
+const multer = require('multer');
 // const { verifyToken } = require('./middle_ware');
 const db = require('./db');
 
 
 
-
+const upload = multer({ dest: 'uploads/' });
 // ***********GET FAMILY MEMBERS ********** //
 app.get('/members', (req, res) => {
     const query = 'SELECT * FROM family_member';
@@ -21,11 +22,12 @@ app.get('/members', (req, res) => {
 });
 
 // *************ADD FAMILY MEMBER**************** //
-app.post('/add', (req, res) => {
-    const { first_name, last_name, mobile_no, dob, gender, relation, profession } = req.body;
+app.post('/add',upload.single('image'), (req, res) => {
+    const { first_name, last_name, mobile_no, dob, gender, relation, profession} = req.body;
+    const imageData = req.file.buffer;
 
-    const query = 'INSERT INTO family_member (first_name, last_name, mobile_no, dob, gender, relation, profession) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const values = [first_name, last_name, mobile_no, dob, gender, relation, profession];
+    const query = 'INSERT INTO family_member (first_name, last_name, mobile_no, dob, gender, relation, profession, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const values = [first_name, last_name, mobile_no, dob, gender, relation, profession,imageData];
 
     db.query(query, values, (err, result) => {
         if (err) {
