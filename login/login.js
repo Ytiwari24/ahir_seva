@@ -1,27 +1,155 @@
 const express = require('express')
 const jwt = require('jsonwebtoken');
-const app = express.Router()
+const app = express.Router();
+const bcrypt = require('bcrypt');
 // const { verifyToken } = require('./middle_ware');
 const db = require('../db');
 // const routes=require('./')
 
 ///********************TRY NEW LOGIN USERS AND GET DATA******************///
 
-
-app.post('/api/register', async (req, res) => {
-  const { username, password } = req.body;
-
+///************FOR CREATING NEW USERS**************///
+app.post('/signup', async (req, res) => {
+  const { firstname, lastname, mobile_no, dob, email, profession, password } = req.body;
+  
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    //  db =  pool.getConnection();
-    const [result] =  db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
-    db.release();
+    const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
-    res.json({ message: 'User registered successfully' });
+    const query = `INSERT INTO users (firstname, lastname, mobile_no, dob, email, profession, password) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    db.query(query, [firstname, lastname, mobile_no, dob, email, profession, hashedPassword], (err, result) => {
+      if (err) {
+        console.error('Error signing up:', err);
+        res.status(500).json({ error: 'Error signing up' });
+      } else {
+        res.status(201).json({ message: 'Signup successful' });
+      }
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Database error' });
+    console.error('Error hashing password:', error);
+    res.status(500).json({ error: 'Error hashing password' });
   }
 });
+
+///**************GET ALL USERS*******************///
+// Define a route to fetch data
+app.get('/users', (req, res) => {
+  const query = 'SELECT * FROM users';
+  // const familyData= 'SELECT * FROM family_member';
+  db.query(query, (err, results) => {
+      if (err) {
+          console.error('Error executing SQL query:', err);
+          res.status(500).json({ error: 'Internal server error' });
+          return;
+      }
+      res.json(results);
+  });
+});
+
+
+///***************LOGIN USERS********************///
+// 5. Implement Login API
+
+// 1. Implement Login API
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  const query = `SELECT * FROM users WHERE email = ?`;
+  db.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error('Error logging in:', err);
+      res.status(500).json({ error: 'Error logging in' });
+    } else {
+      if (results.length === 1) {
+        const user = results[0];
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (isPasswordValid) {
+          const token = jwt.sign({ userId: user.id }, 'your_secret_key'); // Replace with a secret key
+          res.json({ token, user: { ...user, password: undefined } });
+        } else {
+          res.status(401).json({ error: 'Invalid credentials' });
+        }
+      } else {
+        res.status(401).json({ error: 'Invalid credentials' });
+      }
+    }
+  });
+});
+
+// app.post('/login', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   const query = `SELECT * FROM users WHERE email = ?`;
+//   db.query(query, [email], async (err, results) => {
+//     if (err) {
+//       console.error('Error logging in:', err);
+//       res.status(500).json({ error: 'Error logging in' });
+//     } else {
+//       if (results.length === 1) {
+//         const user = results[0];
+
+//         const isPasswordValid = await bcrypt.compare(password, user.password);
+//         if (isPasswordValid) {
+//           // Create and send a JWT token
+//           const token = jwt.sign({ userId: user.id }, 'your_secret_key'); // Replace with a secret key
+          
+//           // Send user information and token in the response
+//           res.json({ user, token });
+//         } else {
+//           res.status(401).json({ error: 'Invalid credentials' });
+//         }
+//       } else {
+//         res.status(401).json({ error: 'Invalid credentials' });
+//       }
+//     }
+//   });
+// });
+
+
+
+// app.post('/login', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   const query = `SELECT * FROM users WHERE email = ?`;
+//   db.query(query, [email], async (err, results) => {
+//     if (err) {
+//       console.error('Error logging in:', err);
+//       res.status(500).json({ error: 'Error logging in' });
+//     } else {
+//       if (results.length === 1) {
+//         const user = results[0];
+
+//         const isPasswordValid = await bcrypt.compare(password, user.password);
+//         if (isPasswordValid) {
+//           // Create and send a JWT token
+//           const token = jwt.sign({ userId: user.id }, 'your_secret_key'); // Replace with a secret key
+//           res.json({ token });
+//         } else {
+//           res.status(401).json({ error: 'Invalid credentials' });
+//         }
+//       } else {
+//         res.status(401).json({ error: 'Invalid credentials' });
+//       }
+//     }
+//   });
+// });
+
+
+// app.post('/api/register', async (req, res) => {
+//   const { username, password } = req.body;
+
+//   try {
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     //  db =  pool.getConnection();
+//     const [result] =  db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+//     db.release();
+
+//     res.json({ message: 'User registered successfully' });
+//   } catch (error) {
+//     res.status(500).json({ error: 'Database error' });
+//   }
+// });
 
 
 
@@ -95,41 +223,41 @@ app.post('/api/register', async (req, res) => {
 
 
 // Login Route
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+// app.post('/login', (req, res) => {
+//     const { username, password } = req.body;
 
-    // Fetch user from the database and compare passwords
-    db.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
-      if (err) {
-        res.status(500).json({ error: 'Database error' });
-      } else if (results.length === 0 || results[0].password !== password) {
-        res.status(401).json({ error: 'Invalid credentials' });
-      } else {
-        const user = results[0];
+//     // Fetch user from the database and compare passwords
+//     db.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
+//       if (err) {
+//         res.status(500).json({ error: 'Database error' });
+//       } else if (results.length === 0 || results[0].password !== password) {
+//         res.status(401).json({ error: 'Invalid credentials' });
+//       } else {
+//         const user = results[0];
 
-        // Create JWT token
-        const token = jwt.sign({ id: user.id }, 'your_secret_key', { expiresIn: '1h' });
+//         // Create JWT token
+//         const token = jwt.sign({ id: user.id }, 'your_secret_key', { expiresIn: '1h' });
 
-        res.json({ token });
-      }
-    });
-  });
+//         res.json({ token });
+//       }
+//     });
+//   });
 
-const secretKey = 'your_secret_key';
+// const secretKey = 'your_secret_key';
 
 // Middleware to verify JWT token
-const verifyToken = (req, res, next) => {
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ message: 'Access denied' });
+// const verifyToken = (req, res, next) => {
+//     const token = req.header('Authorization');
+//     if (!token) return res.status(401).json({ message: 'Access denied' });
 
-    try {
-        const decoded = jwt.verify(token, secretKey);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid token' });
-    }
-};
+//     try {
+//         const decoded = jwt.verify(token, secretKey);
+//         req.user = decoded;
+//         next();
+//     } catch (error) {
+//         res.status(400).json({ message: 'Invalid token' });
+//     }
+// };
 
 // app.post('/login', (req, res) => {
 //     const { username, password } = req.body;
@@ -152,25 +280,25 @@ const verifyToken = (req, res, next) => {
 //     res.json({ token });
 // });
 
-app.get('/protected', verifyToken, (req, res) => {
-    res.json({ message: 'Protected route accessed' });
-});
+// app.get('/protected', verifyToken, (req, res) => {
+//     res.json({ message: 'Protected route accessed' });
+// });
 
 
 
 // Define a route to fetch data
-app.get('/users', (req, res) => {
-    const query = 'SELECT * FROM users';
-    // const familyData= 'SELECT * FROM family_member';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error executing SQL query:', err);
-            res.status(500).json({ error: 'Internal server error' });
-            return;
-        }
-        res.json(results);
-    });
-});
+// app.get('/users', (req, res) => {
+//     const query = 'SELECT * FROM users';
+//     // const familyData= 'SELECT * FROM family_member';
+//     db.query(query, (err, results) => {
+//         if (err) {
+//             console.error('Error executing SQL query:', err);
+//             res.status(500).json({ error: 'Internal server error' });
+//             return;
+//         }
+//         res.json(results);
+//     });
+// });
 
 
 // Routes
