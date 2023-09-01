@@ -23,11 +23,11 @@ app.get('/members', (req, res) => {
 
 // *************ADD FAMILY MEMBER**************** //
 app.post('/add',upload.single('image'), (req, res) => {
-    const { first_name, last_name, mobile_no, dob, gender, relation, profession} = req.body;
+    const { user_id,first_name, last_name, mobile_no, dob, gender, relation, profession} = req.body;
     const imageData = req.file.buffer;
 
-    const query = 'INSERT INTO family_member (first_name, last_name, mobile_no, dob, gender, relation, profession, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const values = [first_name, last_name, mobile_no, dob, gender, relation, profession,imageData];
+    const query = 'INSERT INTO family_member (user_id,first_name, last_name, mobile_no, dob, gender, relation, profession, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const values = [user_id,first_name, last_name, mobile_no, dob, gender, relation, profession,imageData];
 
     db.query(query, values, (err, result) => {
         if (err) {

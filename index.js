@@ -106,6 +106,7 @@ app.use('/',require('./login/login'))
 app.use('/comitti',require('./working_comitti'))
 app.use('/events',require('./events'))
 app.use('/family',require('./family_member'))
+app.use('/community/',require('./community_tree'))
 // User Registration
 // app.post('/register', async (req, res) => {
 //   try {
