@@ -63,4 +63,46 @@ app.post('/addFamilyMember', (req, res) => {
     });
   });
 
+
+///***************************************************************///
+
+  // Get all family members API
+  app.get('/get', (req, res) => {
+    // Retrieve all family members from the database
+    const sql = 'SELECT * FROM family_tree';
+    db.query(sql, (err, results) => {
+      if (err) throw err;
+      res.json(results);
+    });
+  });
+
+
+   // Get all Parents members API
+   app.get('/parents', (req, res) => {
+    // Retrieve all family members from the database
+    const sql = 'SELECT id, name FROM family_tree';
+    db.query(sql, (err, results) => {
+      if (err) throw err;
+      res.json(results);
+    });
+  });
+ // *************ADD FAMILY MEMBER**************** //
+app.post('/add', (req, res) => {
+  const {name,parent_id} = req.body;
+  // const imageData = req.file.buffer;
+
+  const query = 'INSERT INTO family_tree (name,parent_id) VALUES (?, ?)';
+  const values = [name,parent_id];
+
+  db.query(query, values, (err, result) => {
+      if (err) {
+          console.error('Error adding family member:', err);
+          res.status(500).json({ error: 'Failed to add family member' });
+      } else {
+          console.log('Family member added:', result);
+          res.json({ message: 'Family member added successfully' });
+      }
+  });
+}); 
+
 module.exports = app;
