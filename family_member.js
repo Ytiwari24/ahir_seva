@@ -9,25 +9,52 @@ const db = require('./db');
 
 const upload = multer({ dest: 'uploads/' });
 // ***********GET FAMILY MEMBERS ********** //
-app.get('/members', (req, res) => {
-    const query = 'SELECT * FROM family_member';
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error('Error executing SQL query:', err);
-            res.status(500).json({ error: 'Internal server error' });
-            return;
-        }
+// Get family members for a specific user by user ID
+app.get('/members/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const sql = 'SELECT * FROM family_member WHERE user_id = ?';
+  
+    db.query(sql, [userId], (err, results) => {
+      if (err) {
+        console.error('Error fetching family members:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+  
+      res.json(results);
+    });
+  });
+// app.get('/members/:userId', (req, res) => {
+//     userID = req.params.id;
+//     const query = 'SELECT * FROM family_member WHERE user_id= ?';
+//     db.query(query, [userID],(err, results) => {
+//         if (err) {
+//             console.error('Error executing SQL query:', err);
+//             res.status(500).json({ error: 'Internal server error' });
+//             return;
+//         }
+//         res.json(results);
+//     });
+// });
+
+
+// Get all Parents members API
+app.get('/parents', (req, res) => {
+    // Retrieve all family members from the database
+    const sql = 'SELECT id, first_name, last_name FROM family_member';
+    db.query(sql, (err, results) => {
+        if (err) throw err;
         res.json(results);
     });
 });
 
 // *************ADD FAMILY MEMBER**************** //
-app.post('/add',upload.single('image'), (req, res) => {
-    const { user_id,first_name, last_name, mobile_no, dob, gender, relation, profession} = req.body;
-    const imageData = req.file.buffer;
+app.post('/add',(req, res) => {
+    const { parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession } = req.body;
+    // const imageData = req.file.buffer;
 
-    const query = 'INSERT INTO family_member (user_id,first_name, last_name, mobile_no, dob, gender, relation, profession, image) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const values = [user_id,first_name, last_name, mobile_no, dob, gender, relation, profession,imageData];
+    const query = 'INSERT INTO family_member (parent_id,first_name, last_name, mobile_no, dob, gender, relation, profession) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession];
 
     db.query(query, values, (err, result) => {
         if (err) {
