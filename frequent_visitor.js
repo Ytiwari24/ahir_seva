@@ -5,7 +5,7 @@ const db = require('./db');
 
 // Add a new route to handle POST requests for adding data
 app.post('/add', (req, res) => {
-    const { name, mobile_no, place, date, time, type } = req.body; // Assuming the request body contains 'name' and 'email' fields
+    const { name, mobile_no, place, date, time, type } = req.body; // Assuming the request body contains  'email' fields
 
     if (!name || !mobile_no) {
         return res.status(400).json({ error: 'Name and Number are required' });

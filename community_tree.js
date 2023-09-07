@@ -75,8 +75,7 @@ app.post('/addFamilyMember', (req, res) => {
       res.json(results);
     });
   });
-
-
+  
    // Get all Parents members API
    app.get('/parents', (req, res) => {
     // Retrieve all family members from the database

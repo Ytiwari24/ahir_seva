@@ -5,8 +5,6 @@ const app = express.Router()
 const db = require('./db');
 
 
-
-
 // Define a route to fetch data
 app.get('/get', (req, res) => {
     const query = 'SELECT * FROM upcoming_events';

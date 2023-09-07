@@ -102,10 +102,6 @@ app.get('/parents', (req, res) => {
 // });
 
 
-
-
-
-
 ///*******************ADD MEMBER WITH AUTHORIZATION********************************///
 // Add Family Member
 app.post('/add', (req, res) => {
@@ -125,7 +121,7 @@ app.post('/add', (req, res) => {
         const userId = decoded.userId;
 
         // Parse data from the request body
-        const { parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession } = req.body;
+        const { parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession,image } = req.body;
 
         // Validate input data (ensure name and relationship are provided)
         //   if (!name || !relationship) {
@@ -134,8 +130,8 @@ app.post('/add', (req, res) => {
         //   }
 
         // Insert the new family member into the database
-        const query = 'INSERT INTO family_member (user_id,parent_id,first_name, last_name, mobile_no, dob, gender, relation, profession) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)';
-        const values = [userId, parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession];
+        const query = 'INSERT INTO family_member (user_id,parent_id,first_name, last_name, mobile_no, dob, gender, relation, profession, image) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        const values = [userId, parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession,image];
         db.query(query, values,
             (dbErr, results) => {
                 if (dbErr) {
