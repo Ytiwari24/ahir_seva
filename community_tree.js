@@ -2,21 +2,7 @@ const express = require('express')
 const app = express.Router()
 const db = require('./db');
 
-// const list = 
-//     '['
-//     '{"id":"A","next":[{"outcome":"B"},{"outcome":"Z"}]},'
-//     '{"id":"B","next":[{"outcome":"C"},{"outcome":"D"},{"outcome":"E"}]},'
-//     '{"id":"C","next":[{"outcome":"F"}]},'
-//     '{"id":"D","next":[{"outcome":"J"}]},{"id":"E","next":[{"outcome":"J"}]},'
-//     '{"id":"J","next":[{"outcome":"I"}]},'
-//     '{"id":"I","next":[{"outcome":"H"}]},{"id":"F","next":[{"outcome":"K"}]},'
-//     '{"id":"K","next":[{"outcome":"L"}]},'
-//     '{"id":"H","next":[{"outcome":"L"}]},{"id":"L","next":[{"outcome":"P"}]},'
-//     '{"id":"P","next":[{"outcome":"M"},{"outcome":"N"}]},'
-//     '{"id":"M","next":[]},{"id":"N","next":[]},{"id":"Z","next":[]}'
-//     ']';
 
-// Provided JSON response (escaped string)
 const jsonResponse = '[' +
     '{"id":"A","next":[{"outcome":"B"},{"outcome":"Z"}]},' +
     '{"id":"B","next":[{"outcome":"C"},{"outcome":"D"},{"outcome":"E"}]},' +
@@ -75,7 +61,7 @@ app.post('/addFamilyMember', (req, res) => {
       res.json(results);
     });
   });
-  
+
    // Get all Parents members API
    app.get('/parents', (req, res) => {
     // Retrieve all family members from the database

@@ -63,15 +63,15 @@ app.get('/parents', (req, res) => {
         );
     });
 });
-// app.get('/parents', (req, res) => {
-    
-//     // Retrieve all family members from the database
-//     const sql = 'SELECT id, first_name, last_name FROM family_member';
-//     db.query(sql, (err, results) => {
-//         if (err) throw err;
-//         res.json(results);
-//     });
-// });
+app.get('/all', (req, res) => {
+
+    // Retrieve all family members from the database
+    const sql = 'SELECT * FROM family_member';
+    db.query(sql, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
 
 // Get family members for a specific user by user ID
 // app.get('/members', (req, res) => {
@@ -106,7 +106,6 @@ app.get('/parents', (req, res) => {
 // Add Family Member
 app.post('/add', (req, res) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-
     if (!token) {
         res.status(401).json({ message: 'Authentication required' });
         return;
@@ -121,7 +120,7 @@ app.post('/add', (req, res) => {
         const userId = decoded.userId;
 
         // Parse data from the request body
-        const { parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession,image } = req.body;
+        const { parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession, image } = req.body;
 
         // Validate input data (ensure name and relationship are provided)
         //   if (!name || !relationship) {
@@ -131,7 +130,7 @@ app.post('/add', (req, res) => {
 
         // Insert the new family member into the database
         const query = 'INSERT INTO family_member (user_id,parent_id,first_name, last_name, mobile_no, dob, gender, relation, profession, image) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const values = [userId, parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession,image];
+        const values = [userId, parent_id, first_name, last_name, mobile_no, dob, gender, relation, profession, image];
         db.query(query, values,
             (dbErr, results) => {
                 if (dbErr) {
