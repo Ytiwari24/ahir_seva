@@ -43,6 +43,22 @@ app.post('/add', (req, res) => {
 });
 
 
+// Update a family member
+app.put('/update/:id', (req, res) => {
+  const eventId = req.params.id;
+  const updatedData = req.body;
+
+  const sql = 'UPDATE upcoming_events SET ? WHERE id = ?';
+  db.query(sql, [updatedData, eventId], (err, result) => {
+      if (err) {
+          console.error('Error updating family member:', err);
+          res.status(500).json({ error: 'Error updating family member' });
+      } else {
+          res.json({ message: 'Event updated successfully' });
+      }
+  });
+});
+
 app.delete('/delete/:eventId', (req, res) => {
     const eventId = req.params.eventId;
   
