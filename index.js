@@ -8,7 +8,7 @@ const cors=require('cors');
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3300;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -21,6 +21,7 @@ app.use('/events',require('./events'))
 app.use('/family',require('./family_member'))
 app.use('/community/',require('./community_tree'))
 app.use('/',require('./birthday_anniversary'))
+app.use('/',require('./test_image'))
 
 
 
