@@ -36,7 +36,7 @@ app.post('/upload', upload.single('profile'), (req, res) => {
 })
 // Define a route to fetch data
 
-app.get('/members', upload.single('profile'), (req, res) => {
+app.get('/members', upload.single('profile_picture'), (req, res) => {
   const sql = 'SELECT * FROM working_comitti';
   db.query(sql, (err, results) => {
     if (err) {
@@ -45,17 +45,35 @@ app.get('/members', upload.single('profile'), (req, res) => {
     } else {
       const data = results.map((result) => {
         return {
-          // name: result.name,
-          // designation:resul.designation,
-          profile_image: `http://192.168.1.119:3000/${req.file.filename}`,
+          name: results.name,
+          designation:results.designation,
+          profile_picture: `http://192.168.1.119:3000/${req.file.filename}`,
         };
       });
-      res.json(data);
+      // res.json(data);
     }
-    res.json(results);
+    res.json({results,profile_picture: `http://192.168.1.119:3000/${req.file.filename}`,});
   });
 });
 
+///***************WORKING CODE*********************///
+app.get('/get/images', upload.single('profile_picture'), (req, res) => {
+  const sql = 'SELECT name, image_path FROM profile_pictures';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching API URLs:', err);
+      res.status(500).json({ message: 'Failed to fetch API URLs' });
+    } else {
+      const data = results.map((result) => {
+        return {
+          name: result.name,
+          profile_image: `http://192.168.1.119:3000/${req.file.filename}`,
+        };
+      });
+      // res.json(data);
+    }
+  });
+});
 
 // app.get('/members', (req, res) => {
 //   const query = 'SELECT * FROM working_comitti';
@@ -90,7 +108,7 @@ app.get('/members', upload.single('profile'), (req, res) => {
 // Create an API endpoint to add committee members with profile pictures.
 app.post('/add-member', upload.single('profile_picture'), (req, res) => {
   const { name, designation } = req.body;
-  const profile = req.file.filename;
+  const profile = `http://192.168.1.119:3000/${req.file.filename}`;
 
   const sql = 'INSERT INTO working_comitti (name, designation, profile_picture) VALUES (?, ?, ?)';
   db.query(sql, [name, designation, profile], (err, result) => {
