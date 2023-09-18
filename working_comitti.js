@@ -46,13 +46,13 @@ app.get('/members', upload.single('profile_picture'), (req, res) => {
       const data = results.map((result) => {
         return {
           name: results.name,
-          designation:results.designation,
+          designation: results.designation,
           profile_picture: `http://192.168.1.119:3000/${req.file.filename}`,
         };
       });
       // res.json(data);
     }
-    res.json({results,profile_picture: `http://192.168.1.119:3000/${req.file.filename}`,});
+    res.json({ results, profile_picture: `http://192.168.1.119:3000/${req.file.filename}`, });
   });
 });
 
