@@ -10,12 +10,14 @@ app.use(cors());
 app.use(express.json());
 
 const storage = multer.diskStorage({
-  destination: 'uploads/',
+  destination: './uploads/',
   filename: (req, file, callback) => {
-    callback(null, Date.now() + path.extname(file.originalname));
+    callback(null, file.fieldname_Date.now() + path.extname(file.originalname));
   },
 });
 
+
+app.use('/profilePicture',express.static('uploads/'))
 const upload = multer({ storage: storage });
 
 app.post('/upload-profile-picture', upload.single('profilePicture'), (req, res) => {
@@ -84,7 +86,7 @@ app.post('/api/add-api-url', upload.single('profileImage'), (req, res) => {
         const data = results.map((result) => {
           return {
             name: result.name,
-            profile_image: result.image_path ? `http://192.168.1.119:3600/${result.image_path}` : null,
+            profile_image:`http://192.168.1.119:3000/profileImage/${result.image_path}`,
           };
         });
         res.json(data);
